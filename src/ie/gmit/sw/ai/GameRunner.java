@@ -12,6 +12,9 @@ public class GameRunner implements KeyListener{
 	private int currentRow;
 	private int currentCol;
 	
+	Graphics2D g2D;
+	private int health = 100;
+	
 	public GameRunner() throws Exception{
 		model = new Maze(MAZE_DIMENSION);
     	view = new GameView(model);
@@ -72,11 +75,18 @@ public class GameRunner implements KeyListener{
         	}         	  	
         }else if (e.getKeyCode() == KeyEvent.VK_Z){
         	view.toggleZoom();
+        }
+        else if (e.getKeyCode() == KeyEvent.VK_ESCAPE){
+        	System.exit(0);
+        }
+        else if (e.getKeyCode() == KeyEvent.VK_P){
+			health -= 10;
+			isDead(health);
         }else{
         	return;
         }
         
-        updateView();       
+        updateView();
     }
     public void keyReleased(KeyEvent e) {} //Ignore
 	public void keyTyped(KeyEvent e) {} //Ignore
@@ -88,6 +98,16 @@ public class GameRunner implements KeyListener{
 			return true;
 		}else{
 			return false; //Can't move
+		}
+	}
+	
+	private void isDead(int health) {
+		if(health > 0) {
+			//Keep her lit
+		}
+		else {
+			JOptionPane.showMessageDialog(null, "Dead - Game Over");
+			System.exit(0);
 		}
 	}
 	

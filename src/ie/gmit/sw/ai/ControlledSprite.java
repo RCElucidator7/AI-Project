@@ -16,7 +16,7 @@ public class ControlledSprite extends Sprite{
 			super.setImageIndex(1);  //LEFT
 			break;
 		case 3:
-			super.setImageIndex(2);  //LEFT
+			super.setImageIndex(2);  //RIGHT
 		default:
 			break; //Ignore...
 		}		

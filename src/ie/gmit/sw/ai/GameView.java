@@ -74,6 +74,11 @@ public class GameView extends JPanel implements ActionListener{
         			}
         		}else{
         			ch = maze.get(currentRow - cellpadding + row, currentCol - cellpadding + col);
+        			g2.setColor(Color.DARK_GRAY);
+        	        g2.fillRect(DEFAULT_VIEW_SIZE-250, 0, 250, 75);
+        	        g2.setColor(Color.red);
+        	        g2.drawString("Health: " + 100, DEFAULT_VIEW_SIZE-200, 25);
+        	        g2.drawString("Damage: " + 5, DEFAULT_VIEW_SIZE-200, 50);
         		}
         		
         		imageIndex = (int) ch;
