@@ -3,7 +3,6 @@ package ie.gmit.sw.ai;
 import javax.imageio.*;
 import java.awt.image.*;
 
-//Implement Runnable
 public class Sprite {
 	private String name; //The name of this sprite
 	private BufferedImage[][] images; //The set of image frames to animate
@@ -28,24 +27,6 @@ public class Sprite {
 			} 
 		}
 	}
-	
-	/*public void run(){
-		While(alive){
-			Thread pool
-	
-			sleep
-			etc
-		}
-	}*/
-	
-	/*public void fight(take some params){
-	  	Fuzzy/NN Stuff
-	  
-	  
-	 }
-	  
-	 
-	 */
 	
 	public BufferedImage getNext(){ //Returns the next image frame
 		frame++;

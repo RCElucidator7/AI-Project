@@ -9,6 +9,8 @@ public class BestFirstTraversator implements Traversator{
 		this.goal = goal;
 	}
 	
+	private LinkedList<Node> stack = new LinkedList<>();
+	
 	public void traverse(Node[][] maze, Node node) {
 		LinkedList<Node> queue = new LinkedList<Node>();
 		queue.addFirst(node);
@@ -45,4 +47,18 @@ public class BestFirstTraversator implements Traversator{
 			Collections.sort(queue,(Node current, Node next) -> current.getHeuristic(goal) - next.getHeuristic(goal));		
 		}
 	}
+
+	@SuppressWarnings("unused")
+	private void setStack(Node node){
+        while (node != null){
+            this.stack.addLast(node);
+            node = node.getParent();
+        }
+    }
+
+    public LinkedList<Node> getStack(){
+        if(this.stack != null && this.stack.size() > 0)
+            return this.stack;
+        else return null;
+    }
 }

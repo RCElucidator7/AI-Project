@@ -1,5 +1,11 @@
 package ie.gmit.sw.ai;
 
+/**
+ * Direction - enum to determine what direction to take
+ * @author Ryan Conway
+ *
+ */
+
 public enum Direction {
 	UP (0), 
 	DOWN (1), 

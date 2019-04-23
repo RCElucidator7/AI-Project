@@ -1,6 +1,8 @@
 package ie.gmit.sw.ai.traversers;
 
 import java.awt.Color;
+import java.util.LinkedList;
+
 import ie.gmit.sw.ai.node.*;
 public class IDAStarTraversator implements Traversator{
 	private Node[][] maze;
@@ -78,8 +80,14 @@ public class IDAStarTraversator implements Traversator{
 			for (int j = 0; j < maze[i].length; j++){
 				maze[i][j].setVisited(false);
 				maze[i][j].setParent(null);
-				maze[i][j].setColor(Color.BLACK);
+				//maze[i][j].setColor(Color.BLACK);
 			}
 		}
+	}
+
+	@Override
+	public LinkedList<Node> getStack() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

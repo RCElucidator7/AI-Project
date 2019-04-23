@@ -1,5 +1,7 @@
 package ie.gmit.sw.ai.traversers;
 
+import java.util.LinkedList;
+
 import ie.gmit.sw.ai.node.*;
 public class RandomWalk implements Traversator{
 	public void traverse(Node[][] maze, Node node) {
@@ -33,5 +35,11 @@ public class RandomWalk implements Traversator{
 		}
 		
 		if (!complete) System.out.println("*** Out of steps....");
+	}
+
+	@Override
+	public LinkedList<Node> getStack() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

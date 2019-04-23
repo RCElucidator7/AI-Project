@@ -1,7 +1,11 @@
 package ie.gmit.sw.ai;
 
-import javax.imageio.*;
-import java.awt.image.*;
+/**
+ * ControlledSprite - Controls the Direction and frames of sprites
+ * @author Ryan Conway
+ *
+ */
+
 public class ControlledSprite extends Sprite{	
 	public ControlledSprite(String name, int frames, String... images) throws Exception{
 		super(name, frames, images);

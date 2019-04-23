@@ -1,9 +1,15 @@
 package ie.gmit.sw.ai;
 
+/**
+ * GameView - Paints the components onto the window
+ * @author Ryan Conway
+ */
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 public class GameView extends JPanel implements ActionListener{
+	//Initialize sizes for maze/cells
 	private static final long serialVersionUID = 1L;
 	public static final int DEFAULT_VIEW_SIZE = 800;	
 	private int cellspan = 5;	
@@ -19,6 +25,10 @@ public class GameView extends JPanel implements ActionListener{
 	private int offset = 48; //The number 0 is ASCII 48.
 	private Color[] reds = {new Color(255,160,122), new Color(139,0,0), new Color(255, 0, 0)}; //Animate enemy "dots" to make them easier to see
 	
+	public Character character = new Character(1, 1);
+	public Weapon weapon = new Weapon(WeaponType.FIST, 5);
+	
+	//Sets foundations for maze and starts timer
 	public GameView(Maze maze) throws Exception{
 		this.maze = maze;
 		setBackground(Color.LIGHT_GRAY);
@@ -27,6 +37,7 @@ public class GameView extends JPanel implements ActionListener{
 		timer.start();
 	}
 	
+	//Set a row
 	public void setCurrentRow(int row) {
 		if (row < cellpadding){
 			currentRow = cellpadding;
@@ -37,6 +48,7 @@ public class GameView extends JPanel implements ActionListener{
 		}
 	}
 
+	//Set a Column
 	public void setCurrentCol(int col) {
 		if (col < cellpadding){
 			currentCol = cellpadding;
@@ -47,6 +59,7 @@ public class GameView extends JPanel implements ActionListener{
 		}
 	}
 
+	//Paints the window 
 	public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
@@ -61,24 +74,24 @@ public class GameView extends JPanel implements ActionListener{
         		int y1 = row * size;
         		
         		char ch = '0';
-       		
+        		
+        		//Check to determine what perspective to draw
         		if (zoomOut){
         			ch = maze.get(row, col);
         			if (ch >= '5'){
 	        			if (row == currentRow && col == currentCol){
 	        				g2.setColor(Color.YELLOW);
-	        			}else{
+	        			}
+	        			else{
 	        				g2.setColor(reds[(int) (Math.random() * 3)]);
 	        			}
-        				g2.fillRect(x1, y1, size, size);
         			}
+        			if(ch == '\u003E') {
+        				g2.setColor(Color.ORANGE);
+        			}
+        			g2.fillRect(x1, y1, size, size);
         		}else{
         			ch = maze.get(currentRow - cellpadding + row, currentCol - cellpadding + col);
-        			g2.setColor(Color.DARK_GRAY);
-        	        g2.fillRect(DEFAULT_VIEW_SIZE-250, 0, 250, 75);
-        	        g2.setColor(Color.red);
-        	        g2.drawString("Health: " + 100, DEFAULT_VIEW_SIZE-200, 25);
-        	        g2.drawString("Damage: " + 5, DEFAULT_VIEW_SIZE-200, 50);
         		}
         		
         		imageIndex = (int) ch;
@@ -93,10 +106,12 @@ public class GameView extends JPanel implements ActionListener{
         }
 	}
 	
+	//Toggles the view which determines what should be drawn
 	public void toggleZoom(){
 		zoomOut = !zoomOut;		
 	}
 
+	//Repaints the enemy when an action is performed
 	public void actionPerformed(ActionEvent e) {	
 		if (enemy_state < 0 || enemy_state == 5){
 			enemy_state = 6;
@@ -106,6 +121,7 @@ public class GameView extends JPanel implements ActionListener{
 		this.repaint();
 	}
 	
+	//Set the sprites
 	public void setSprites(Sprite[] sprites){
 		this.sprites = sprites;
 	}

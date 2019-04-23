@@ -1,5 +1,7 @@
 package ie.gmit.sw.ai.traversers;
 
+import java.util.LinkedList;
+
 import ie.gmit.sw.ai.node.*;
 public class BasicHillClimbingTraversator implements Traversator{
 	private Node goal;
@@ -47,5 +49,11 @@ public class BasicHillClimbingTraversator implements Traversator{
 			node = next;	
 			next = null;
 		}
+	}
+
+	@Override
+	public LinkedList<Node> getStack() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

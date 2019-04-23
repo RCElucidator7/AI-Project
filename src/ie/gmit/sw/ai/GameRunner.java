@@ -1,27 +1,55 @@
 package ie.gmit.sw.ai;
 
+/**
+ * GameRunner - sets up the maze and everything in it.
+ * @author Ryan Conway
+ */
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
+import ie.gmit.sw.ai.enemy.ControllersPool;
 public class GameRunner implements KeyListener{
+	
+	//Constants - Used for maze size and sprite count
 	private static final int MAZE_DIMENSION = 100;
-	private static final int IMAGE_COUNT = 14;
+	private static final int IMAGE_COUNT = 15;
+	
+	//Initalize player, view window and maze
 	private ControlledSprite player;
 	private GameView view;
 	private Maze model;
+	
+	//Current Row/Column - Characters Location
 	private int currentRow;
 	private int currentCol;
 	
-	Graphics2D g2D;
-	private int health = 100;
+	//Pool controller for character maze and spiders
+	private ControllersPool controller;
 	
+	//Character and Weapon types
+	private Character character;
+	private Weapon weapon;
+		
+	//Runs the game
 	public GameRunner() throws Exception{
 		model = new Maze(MAZE_DIMENSION);
     	view = new GameView(model);
     	
+    	//Initalize Character and give him a weapon
+    	character = new Character(currentRow, currentCol);
+    	weapon = new Weapon(WeaponType.FIST, 5);
+    	character.add(weapon);
+    	
+    	//Put the character and maze into the pool controller
+    	this.controller = new ControllersPool(model, character);
+    	
+    	//Set the sprites
     	Sprite[] sprites = getSprites();
     	view.setSprites(sprites);
     	
+    	//Place the player in the maze randomly
     	placePlayer();
     	
     	Dimension d = new Dimension(GameView.DEFAULT_VIEW_SIZE, GameView.DEFAULT_VIEW_SIZE);
@@ -38,8 +66,12 @@ public class GameRunner implements KeyListener{
         f.setLocation(100,100);
         f.pack();
         f.setVisible(true);
+        
+        //Run the controller
+        this.controller.runController();
 	}
 	
+	//Places the player randomly in the maze
 	private void placePlayer(){   	
     	currentRow = (int) (MAZE_DIMENSION * Math.random());
     	currentCol = (int) (MAZE_DIMENSION * Math.random());
@@ -47,41 +79,51 @@ public class GameRunner implements KeyListener{
     	updateView(); 		
 	}
 	
+	//Updates the maze and character each frame
 	private void updateView(){
 		view.setCurrentRow(currentRow);
 		view.setCurrentCol(currentCol);
+		
+		character.setCurrentRow(currentRow);
+		character.setCurrentCol(currentCol);
 	}
 
+	//Determines if the user has pressed a key
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT && currentCol < MAZE_DIMENSION - 1) {
+    	//Checks if the user press Right arrow/D and moves them in that direction
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D && currentCol < MAZE_DIMENSION - 1) {
         	if (isValidMove(currentRow, currentCol + 1)){
 				player.setDirection(Direction.RIGHT);
 				currentCol++; 
-        	}   		
-        }else if (e.getKeyCode() == KeyEvent.VK_LEFT && currentCol > 0) {
+        	}
+        //Checks if the user press Left arrow/A and moves them in that direction	
+        }else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A && currentCol > 0) {
         	if (isValidMove(currentRow, currentCol - 1)) {
 				player.setDirection(Direction.LEFT);
 				currentCol--;	
 			}
-        }else if (e.getKeyCode() == KeyEvent.VK_UP && currentRow > 0) {
+    	//Checks if the user press Up arrow/W and moves them in that direction
+        }else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W  && currentRow > 0) {
         	if (isValidMove(currentRow - 1, currentCol)) {
 				player.setDirection(Direction.UP);
 				currentRow--;
 			}
-        }else if (e.getKeyCode() == KeyEvent.VK_DOWN && currentRow < MAZE_DIMENSION - 1) {
+    	//Checks if the user press Down arrow/S and moves them in that direction
+        }else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S  && currentRow < MAZE_DIMENSION - 1) {
         	if (isValidMove(currentRow + 1, currentCol)){
         		player.setDirection(Direction.DOWN);
 				currentRow++;
         	}         	  	
+    	//Checks if the user has pressed Z and toggles the zoom of the maze
         }else if (e.getKeyCode() == KeyEvent.VK_Z){
         	view.toggleZoom();
         }
-        else if (e.getKeyCode() == KeyEvent.VK_ESCAPE){
+        //Checks if the user has pressed E and displays the characters current lifeForce and Weapon
+        else if (e.getKeyCode() == KeyEvent.VK_E){
+        	JOptionPane.showMessageDialog(null, "Current Health : " + character.getLifeForce() + "\nCurrent Weapon: " + weapon.getWeaponEnum());
+        
+        }else if (e.getKeyCode() == KeyEvent.VK_ESCAPE){ //Checks if the user presses escape and exits the window
         	System.exit(0);
-        }
-        else if (e.getKeyCode() == KeyEvent.VK_P){
-			health -= 10;
-			isDead(health);
         }else{
         	return;
         }
@@ -91,23 +133,51 @@ public class GameRunner implements KeyListener{
     public void keyReleased(KeyEvent e) {} //Ignore
 	public void keyTyped(KeyEvent e) {} //Ignore
    
+	//Checks if the character can make a valid move
+	//This may consist of picking up a weapon, picking up a help item or moving into an available space
 	private boolean isValidMove(int row, int col){
+		
+		//Variables for each item type
+		char sword = '\u0031', help = '\u0032', bomb = '\u0033', hydrogenBomb = '\u0034', goal = '\u003E';
+    	
+		//Checks to see if the player is able to pick up a sword and adds it to their inventory
+    	if (row <= model.size() - 1 && col <= model.size() -1 && model.get(row, col) == sword) { 
+    		weapon = new Weapon(WeaponType.SWORD, 15); 
+    		System.out.println("Picked up Sword!");
+    		model.set(row, col, '0'); 
+    		character.add(weapon); 
+    	}
+    	//Checks to see if the player is able to pick up a bomb and adds it to their inventory
+    	if (row <= model.size() - 1 && col <= model.size() -1 && model.get(row, col) == bomb) { 
+    		weapon = new Weapon(WeaponType.BOMB, 25); 
+    		System.out.println("Picked up Bomb");
+    		model.set(row, col, '0'); 
+    		character.add(weapon); 
+    	}
+    	//Checks to see if the player is able to pick up a hydrogen and adds it to their inventory
+    	if (row <= model.size() - 1 && col <= model.size() -1 && model.get(row, col) == hydrogenBomb) { 
+    		weapon = new Weapon(WeaponType.HYDROGENBOMB, 50); 
+    		System.out.println("Picked up Hydrogen Bomb");
+    		model.set(row, col, '0'); 
+    		character.add(weapon); 
+    	}
+    	//Checks to see if the player is able to use the help item. The co-ordinates of the goal is displayed on screen
+    	if (row <= model.size() - 1 && col <= model.size() -1 && model.get(row, col) == help) { 
+    		JOptionPane.showMessageDialog(null, model.getGoal());
+    		model.set(row, col, '0');
+    	}
+    	//Checks to see if the player is at the target. Triggers You Win pop up and closes the window
+    	if (row <= model.size() - 1 && col <= model.size() -1 && model.get(row, col) == goal) { 
+    		JOptionPane.showMessageDialog(null, "Congratulations! You Win!");
+    		System.exit(0);
+    	}
+		//Checks if the player can move into a free space
 		if (row <= model.size() - 1 && col <= model.size() - 1 && model.get(row, col) == ' '){
 			model.set(currentRow, currentCol, '\u0020');
 			model.set(row, col, '5');
 			return true;
 		}else{
 			return false; //Can't move
-		}
-	}
-	
-	private void isDead(int health) {
-		if(health > 0) {
-			//Keep her lit
-		}
-		else {
-			JOptionPane.showMessageDialog(null, "Dead - Game Over");
-			System.exit(0);
 		}
 	}
 	
@@ -135,12 +205,9 @@ public class GameRunner implements KeyListener{
 		sprites[11] = new Sprite("Orange Spider", 2, "resources/images/spiders/orange_spider_1.png", "resources/images/spiders/orange_spider_2.png");
 		sprites[12] = new Sprite("Red Spider", 2, "resources/images/spiders/red_spider_1.png", "resources/images/spiders/red_spider_2.png");
 		sprites[13] = new Sprite("Yellow Spider", 2, "resources/images/spiders/yellow_spider_1.png", "resources/images/spiders/yellow_spider_2.png");
+		sprites[14] = new Sprite("Goal", 1, "resources/images/objects/goal.png");
 		return sprites;
 		
-		/*
-		  For (Sprite s : sprites){
-		  pool.execute
-		 }*/
 	}
 	
 	public static void main(String[] args) throws Exception{

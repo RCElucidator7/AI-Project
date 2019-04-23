@@ -1,5 +1,7 @@
 package ie.gmit.sw.ai.traversers;
 
+import java.util.LinkedList;
+
 import ie.gmit.sw.ai.node.*;
 public class SimulatedAnnealingTraversator implements Traversator{
 	private Node goal;
@@ -76,5 +78,11 @@ public class SimulatedAnnealingTraversator implements Traversator{
 			if (current.getHeuristic(goal) < best.getHeuristic(goal)) best = current;
             temperature *= (1 - alpha); //Cool system
         }
+	}
+
+	@Override
+	public LinkedList<Node> getStack() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

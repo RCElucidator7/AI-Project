@@ -1,5 +1,7 @@
 package ie.gmit.sw.ai.traversers;
 
+import java.util.LinkedList;
+
 import ie.gmit.sw.ai.node.*;
 public class RecursiveDFSTraversator implements Traversator{
 	private Node[][] maze;
@@ -38,5 +40,11 @@ public class RecursiveDFSTraversator implements Traversator{
 				dfs(children[i]);
 			}
 		}
+	}
+
+	@Override
+	public LinkedList<Node> getStack() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

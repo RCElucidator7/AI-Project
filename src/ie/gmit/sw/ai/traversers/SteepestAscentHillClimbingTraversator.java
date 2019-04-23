@@ -45,4 +45,10 @@ public class SteepestAscentHillClimbingTraversator implements Traversator{
 			}
 		}
 	}
+
+	@Override
+	public LinkedList<Node> getStack() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
